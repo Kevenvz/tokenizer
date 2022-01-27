@@ -49,8 +49,16 @@ function validateToken(resourceName, playerId, token)
             print("Valid token! Resource: " .. tostring(resourceName) .. ", Player ID: " .. tostring(playerId) .. ".")
         end
 	end
+
+	resourceTokens[resourceName][playerId] = nil
 	return true
 end
+
+RegisterNetEvent("tokenizer:requestEventName")
+AddEventHandler("tokenizer:requestEventName", function(resourceName)
+	local playerId = source
+	TriggerClientEvent("tokenizer:eventNameReceived", playerId, resourceEventNames[resourceName])
+end)
 
 RegisterNetEvent("tokenizer:requestToken")
 AddEventHandler("tokenizer:requestToken", function(resourceName)

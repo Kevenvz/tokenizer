@@ -1,33 +1,33 @@
-local resourceNames = {}
+local eventNames = {}
 local resourceTokens = {}
 
 function init()	
 	if Config.VerboseClient then
-		print('Tokenizer initializing')
+		print("Tokenizer initializing")
 	end
 	math.randomseed(GetClockHours() + GetClockMinutes())
     Citizen.CreateThread(function()
-		TriggerEvent('salty_tokenizer:clientReady')
+		TriggerEvent("tokenizer:clientReady")
 	end)
 end
 
-function requestObfuscatedEventName(resource)
-	if resourceNames[resource] == nil then
-		resourceNames[resource] = { id = generateId(), name = false }
-		TriggerServerEvent('salty_tokenizer:requestObfuscation', resource, resourceNames[resource].id)
-		while not resourceNames[resource].name do
+function requestObfuscatedEventName(resourceName)
+	if eventNames[resourceName] == nil then
+		TriggerServerEvent("tokenizer:requestEventName", resourceName)
+		while eventNames[resourceName] == nil do
 			Citizen.Wait(0)
 		end
 	end
-	return resourceNames[resource].name
+
+	return eventNames[resourceName]
 end
 
 function setupClientResource(resourceName)
+    local eventName = requestObfuscatedEventName(resourceName)
 	if Config.VerboseClient then
-		print("Deploying Obfuscated Event: " .. tostring(resource) .. " = " .. tostring(requestObfuscatedEventName(resource)))
+		print("Requested Obfuscated Event for " .. tostring(resourceName) .. " got " .. tostring(eventName))
 	end
 
-    local eventName = requestObfuscatedEventName(resourceName)
 	RegisterNetEvent(eventName)
     AddEventHandler(eventName, function(serverToken)
         resourceTokens[resourceName] = serverToken
@@ -45,3 +45,8 @@ function setupClientResource(resourceName)
         return token
     end
 end
+
+RegisterNetEvent("tokenizer:eventNameReceived")
+AddEventHandler("tokenizer:eventNameReceived", function(resourceName, eventName)
+	eventNames[resourceName] = eventName
+end)
