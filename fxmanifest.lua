@@ -23,8 +23,7 @@ exports {
 server_exports {
 	'generateToken',
 	'setupServerResource',
-	'secureServerEvent',
-	'getResourceToken'
+	'validateToken'
 }
 
 file 'init.lua'

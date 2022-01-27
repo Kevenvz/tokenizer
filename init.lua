@@ -1,10 +1,14 @@
 if IsDuplicityVersion() then
-	AddEventHandler('salty_tokenizer:serverReady', function()
-		exports['salty_tokenizer']:setupServerResource(GetCurrentResourceName())
+	AddEventHandler('tokenizer:serverReady', function()
+		exports['tokenizer']:setupServerResource(GetCurrentResourceName())
 	end)
 else
-	securityToken = nil
-	AddEventHandler('salty_tokenizer:clientReady', function()
-		securityToken = exports['salty_tokenizer']:setupClientResource(GetCurrentResourceName())
+	requestToken = function()
+		print('Token is not available yet')
+	end
+    tokenReady = false
+	AddEventHandler('tokenizer:clientReady', function()
+		requestToken = exports['tokenizer']:setupClientResource(GetCurrentResourceName())
+		tokenReady = true
 	end)
 end
