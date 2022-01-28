@@ -47,7 +47,7 @@ In order to protect a server event, a simple if statement must be added.
 RegisterNetEvent('anticheat-testing:testEvent')
 AddEventHandler('anticheat-testing:testEvent', function(token)
 	local _source = source
-	if not exports['salty_tokenizer']:validateToken(GetCurrentResourceName(), _source, token) then
+	if not exports['tokenizer']:validateToken(GetCurrentResourceName(), _source, token) then
 		return false
 	end
 	print("valid token")
