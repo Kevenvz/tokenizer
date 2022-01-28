@@ -7,7 +7,6 @@ function init()
 	end
 	math.randomseed(os.time())
     initComplete = true
-	TriggerEvent('tokenizer:serverReady')
 end
 
 function initNewPlayer(resourceName, playerId)
@@ -17,10 +16,15 @@ function initNewPlayer(resourceName, playerId)
 end
 
 function setupServerResource(resourceName)
+	while not initComplete do
+		Citizen.Wait(50)
+	end
+
     resourceTokens[resourceName] = {}
     resourceEventNames[resourceName] = exports[GetCurrentResourceName()]:generateToken()
 	if Config.VerboseServer then
 		print("Resource " .. tostring(resourceName) .. ": token map initialized")
+		print("Eventname " .. resourceEventNames[resourceName])
 	end
 end
 
@@ -57,23 +61,19 @@ end
 RegisterNetEvent("tokenizer:requestEventName")
 AddEventHandler("tokenizer:requestEventName", function(resourceName)
 	local playerId = source
-	TriggerClientEvent("tokenizer:eventNameReceived", playerId, resourceEventNames[resourceName])
+	local eventName =  resourceEventNames[resourceName]
+	if Config.VerboseServer then
+		print("Sending eventname " ..  eventName .. " to " .. playerId .. " for resource " .. resourceName .. ".")
+	end
+	TriggerClientEvent("tokenizer:eventNameReceived", playerId, resourceName, eventName)
 end)
 
 RegisterNetEvent("tokenizer:requestToken")
 AddEventHandler("tokenizer:requestToken", function(resourceName)
 	local playerId = source
-    if resourceTokens[resourceName][playerId] ~= nil then
-        local token = exports[GetCurrentResourceName()]:generateToken()
-        resourceTokens[resourceName][playerId] = token
-	    TriggerClientEvent(resourceEventNames[resourceName], playerId, token)
-    else
-        if Config.CustomAction then
-            Config.CustomActionFunction(playerId)
-        else
-            DropPlayer(playerId, Config.KickMessage)
-        end
-    end
+	local token = exports[GetCurrentResourceName()]:generateToken()
+	resourceTokens[resourceName][playerId] = token
+	TriggerClientEvent(resourceEventNames[resourceName], playerId, token)
 end)
 
 AddEventHandler("onServerResourceStart", function(resourceName)

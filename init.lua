@@ -1,14 +1,15 @@
 if IsDuplicityVersion() then
-	AddEventHandler('tokenizer:serverReady', function()
-		exports['tokenizer']:setupServerResource(GetCurrentResourceName())
+	AddEventHandler("onResourceStart", function(resourceName)
+		if resourceName == GetCurrentResourceName() then
+			exports['tokenizer']:setupServerResource(resourceName)
+		end
 	end)
 else
-	requestToken = function()
-		print('Token is not available yet')
-	end
-    tokenReady = false
-	AddEventHandler('tokenizer:clientReady', function()
-		requestToken = exports['tokenizer']:setupClientResource(GetCurrentResourceName())
-		tokenReady = true
+	TokenReady = false
+	AddEventHandler("onClientResourceStart", function(resourceName)
+		if resourceName == GetCurrentResourceName() then
+			RequestToken = exports['tokenizer']:setupClientResource(resourceName)
+			TokenReady = true
+		end
 	end)
 end
