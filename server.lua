@@ -23,8 +23,7 @@ function setupServerResource(resourceName)
     resourceTokens[resourceName] = {}
     resourceEventNames[resourceName] = exports[GetCurrentResourceName()]:generateToken()
 	if Config.VerboseServer then
-		print("Resource " .. tostring(resourceName) .. ": token map initialized")
-		print("Eventname " .. resourceEventNames[resourceName])
+		print("Resource " .. tostring(resourceName) .. ": token map initialized, eventname is " .. resourceEventNames[resourceName])
 	end
 end
 
